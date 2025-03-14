@@ -48,11 +48,6 @@ function getFluxApiUrl(): string {
 // Schema definitions
 const imageGenerationSchema = {
   prompt: z.string().min(1).describe("Prompt for generated image"),
-  seed: z
-    .number()
-    .int()
-    .optional()
-    .describe("Random seed. Set for reproducible generation"),
   num_inference_steps: z
     .number()
     .int()
@@ -73,10 +68,6 @@ const imageGenerationSchema = {
     ])
     .default("1:1")
     .describe("Aspect ratio for the generated image"),
-  disable_safety_checker: z
-    .boolean()
-    .default(false)
-    .describe("Disable safety checker for generated images."),
 };
 
 // Helper functions
@@ -117,9 +108,6 @@ server.tool(
         },
         body: JSON.stringify({
           messages,
-          // Pass seed if provided
-          ...(input.seed !== undefined && { seed: input.seed }),
-          // Map inference steps to num_steps
           ...(input.num_inference_steps !== undefined && { num_steps: input.num_inference_steps }),
           stream: false,
         }),
