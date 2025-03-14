@@ -1,0 +1,28 @@
+# Smithery configuration file: https://smithery.ai/docs/deployments
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - fluxApiToken
+      - fluxApiUrl
+    properties:
+      fluxApiToken:
+        type: string
+        description: "The API token for the Flux API. You can deploy your own API using https://github.com/snakeying/flux-api-worker"
+      fluxApiUrl:
+        type: string
+        description: "The URL for the Flux API. Default is your deployed flux-api-worker API endpoint."
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    config=>({
+      command: 'node',
+      args: ['build/index.js'],
+      env: {
+        FLUX_API_TOKEN: config.fluxApiToken,
+        FLUX_API_URL: config.fluxApiUrl
+      }
+    })

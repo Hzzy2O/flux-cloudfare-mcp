@@ -1,0 +1,14 @@
+/node_modules
+/build
+/dist
+/coverage
+/logs
+/tmp
+.env
+.cursor
+.cursorignore
+.cursorrules
+.cursorconfig
+.cursorignorerules
+.cursorignoreconfig
+api.js

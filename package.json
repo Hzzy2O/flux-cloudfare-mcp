@@ -1,0 +1,42 @@
+{
+  "name": "flux-cloudflare-mcp",
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "flux-cloudflare-mcp": "build/index.js"
+  },
+  "scripts": {
+    "build": "tsc && shx chmod +x build/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "homepage": "https://github.com/yourusername/flux-cloudflare-mcp",
+  "keywords": [
+    "flux",
+    "cloudflare",
+    "worker",
+    "mcp",
+    "flux-mcp",
+    "modelcontextprotocol",
+    "image-generation",
+    "ai"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "description": "MCP for Flux Image Generation with Cloudflare Worker",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "node-fetch": "^2.6.12",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "@types/node-fetch": "^2.6.11",
+    "shx": "^0.3.4",
+    "typescript": "^5.8.2"
+  }
+}
