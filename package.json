@@ -11,7 +11,7 @@
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
   },
-  "homepage": "https://github.com/yourusername/flux-cloudflare-mcp",
+  "homepage": "https://github.com/Hzzy2O/flux-cloudflare-mcp",
   "keywords": [
     "flux",
     "cloudflare",
@@ -22,7 +22,7 @@
     "image-generation",
     "ai"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Hzzy2O <capiiii@outlook.com>",
   "license": "MIT",
   "description": "MCP for Flux Image Generation with Cloudflare Worker",
   "files": [
