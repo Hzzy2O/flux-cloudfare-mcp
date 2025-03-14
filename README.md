@@ -81,20 +81,8 @@ Generates an image based on a text prompt using the Flux model.
 ```typescript
 {
   prompt: string;                // Required: Text description of the image to generate
-  seed?: number;                 // Optional: Random seed for reproducible generation
   num_inference_steps?: number;  // Optional: Number of denoising steps (1-4) (default: 4)
   aspect_ratio?: string;         // Optional: Aspect ratio (e.g., "16:9", "4:3") (default: "1:1")
-  disable_safety_checker?: boolean; // Optional: Disable safety filter (default: false)
-}
-```
-
-#### `get_chat_completion`
-
-Gets a text completion from the Flux API.
-
-```typescript
-{
-  prompt: string;  // Required: Text prompt for completion
 }
 ```
 
@@ -225,3 +213,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
 - [snakeying/flux-api-worker](https://github.com/snakeying/flux-api-worker) - Simple Flux API implementation
 - [aigem/cf-flux-remix](https://github.com/aigem/cf-flux-remix) - Feature-rich Flux API with web UI
+
+[![smithery badge](https://smithery.ai/badge/@Hzzy2O/flux-cloudfare-mcp)](https://smithery.ai/server/@Hzzy2O/flux-cloudfare-mcp)
