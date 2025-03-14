@@ -65,16 +65,11 @@ const imageGenerationSchema = {
   aspect_ratio: z
     .enum([
       "1:1",
-      "16:9",
-      "21:9",
+      "1:2",
       "3:2",
-      "2:3",
-      "4:5",
-      "5:4",
       "3:4",
-      "4:3",
-      "9:16",
-      "9:21",
+      "16:9",
+      "9:16"
     ])
     .default("1:1")
     .describe("Aspect ratio for the generated image"),
@@ -102,11 +97,14 @@ server.tool(
       const token = getFluxApiToken();
       const apiUrl = getFluxApiUrl();
       
+      // Format prompt with aspect ratio included in the prompt string
+      const formattedPrompt = `${input.aspect_ratio} ${input.prompt}`;
+      
       // Construct message for chat completions
       const messages = [
         {
           role: "user",
-          content: input.prompt,
+          content: formattedPrompt,
         },
       ];
 
@@ -123,7 +121,6 @@ server.tool(
           ...(input.seed !== undefined && { seed: input.seed }),
           // Map inference steps to num_steps
           ...(input.num_inference_steps !== undefined && { num_steps: input.num_inference_steps }),
-          aspect_ratio: input.aspect_ratio || "1:1",
           stream: false,
         }),
       });
@@ -135,19 +132,9 @@ server.tool(
 
       const data = await response.json();
       
-      // Extract image URL from response
-      let imageUrl = "";
-      if (data.url) {
-        imageUrl = data.url;
-      } else if (data.choices && data.choices[0]?.message?.content) {
-        // Try to extract URL from message content (contains markdown image)
-        const content = data.choices[0].message.content;
-        const urlMatch = content.match(/!\[.*?\]\((.*?)\)/);
-        if (urlMatch && urlMatch[1]) {
-          imageUrl = urlMatch[1];
-        }
-      }
-
+      // Extract image URL directly from the response
+      const imageUrl = data.url;
+      
       if (!imageUrl) {
         throw new Error("Could not extract image URL from response");
       }
@@ -174,72 +161,6 @@ server.tool(
             type: "image",
             data: base64Image,
             mimeType: mimeType,
-          },
-        ],
-      };
-    } catch (error) {
-      handleError(error);
-    }
-  }
-);
-
-// Define a type for the chat completion input
-type ChatCompletionInput = {
-  prompt: string;
-};
-
-server.tool(
-  "get_chat_completion",
-  "Get text completion using Flux API",
-  {
-    prompt: z.string().min(1).describe("Prompt for text completion"),
-  },
-  async (input) => {
-    try {
-      const token = getFluxApiToken();
-      const apiUrl = getFluxApiUrl();
-      
-      // Construct message for chat completions
-      const messages = [
-        {
-          role: "user",
-          content: input.prompt,
-        },
-      ];
-
-      // Prepare request to Cloudflare Worker
-      const response = await fetch(`${apiUrl}/v1/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          messages,
-          stream: false,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`API request failed: ${response.status} - ${errorData}`);
-      }
-
-      const data = await response.json();
-      
-      // Extract content from response
-      let content = "";
-      if (data.choices && data.choices[0]?.message?.content) {
-        content = data.choices[0].message.content;
-      } else {
-        content = JSON.stringify(data);
-      }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: content,
           },
         ],
       };
