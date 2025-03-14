@@ -61,8 +61,8 @@ function getFluxApiUrl(): string {
 // Schema definitions
 const imageGenerationSchema = {
   prompt: z.string().min(1).describe("Prompt for generated image"),
-  file_name: z.string().min(1).describe("Name of the file to save the image"),
-  save_folder: z.string().default(CONFIG.output.baseFolder).describe("Folder path to save the image"),
+  file_name: z.string().min(1).optional().describe("Name of the file to save the image"),
+  save_folder: z.string().default(CONFIG.output.baseFolder).optional().describe("Folder path to save the image"),
   width: z.number().int().positive().max(CONFIG.image.maxWidth).optional().describe("Width of the generated image"),
   height: z.number().int().positive().max(CONFIG.image.maxHeight).optional().describe("Height of the generated image"),
   num_inference_steps: z
@@ -141,12 +141,6 @@ server.tool(
         throw new Error("Prompt cannot be empty");
       }
       
-      // Validate save path
-      const { isValid, errorMsg, savePath } = validateSavePath(input.save_folder);
-      if (!isValid) {
-        throw new Error(errorMsg);
-      }
-      
       // Set default dimensions if not provided
       const width = input.width || CONFIG.image.defaultWidth;
       const height = input.height || CONFIG.image.defaultHeight;
@@ -157,13 +151,6 @@ server.tool(
           `Width and height must be greater than 0 and not exceed ${CONFIG.image.maxWidth}. ` +
           `Current values: width=${width}, height=${height}`
         );
-      }
-      
-      // Ensure file name has correct extension
-      let fileName = input.file_name;
-      const fileExt = path.extname(fileName).toLowerCase();
-      if (!fileExt || !CONFIG.output.allowedExtensions.includes(fileExt)) {
-        fileName = `${path.basename(fileName, path.extname(fileName))}${CONFIG.output.defaultExtension}`;
       }
       
       const token = getFluxApiToken();
@@ -208,6 +195,23 @@ server.tool(
         throw new Error("Could not extract image URL from response");
       }
 
+      // If file_name is not provided, just return the URL
+      if (!input.file_name) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                success: true,
+                error: null,
+                url: imageUrl,
+                images: []
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
       // Fetch the actual image to get it as base64
       const imageResponse = await fetch(imageUrl);
       if (!imageResponse.ok) {
@@ -217,6 +221,19 @@ server.tool(
       const imageBuffer = await imageResponse.arrayBuffer();
       const base64Image = Buffer.from(imageBuffer).toString('base64');
       const imageData = Buffer.from(imageBuffer);
+      
+      // Validate save path
+      const { isValid, errorMsg, savePath } = validateSavePath(input.save_folder || CONFIG.output.baseFolder);
+      if (!isValid) {
+        throw new Error(errorMsg);
+      }
+      
+      // Ensure file name has correct extension
+      let fileName = input.file_name;
+      const fileExt = path.extname(fileName).toLowerCase();
+      if (!fileExt || !CONFIG.output.allowedExtensions.includes(fileExt)) {
+        fileName = `${path.basename(fileName, path.extname(fileName))}${CONFIG.output.defaultExtension}`;
+      }
       
       // Save the image to file
       const savedImages = [];
@@ -252,6 +269,7 @@ server.tool(
             text: JSON.stringify({
               success: true,
               error: null,
+              url: imageUrl,
               images: savedImages
             }, null, 2),
           },
