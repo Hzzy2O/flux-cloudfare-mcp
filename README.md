@@ -22,12 +22,6 @@ A powerful Model Context Protocol (MCP) server that provides AI assistants with 
 
 ## 📦 Installation
 
-### NPM Global Installation
-
-```bash
-npm install -g flux-cloudflare-mcp
-```
-
 ### Direct Usage with NPX
 
 ```bash
