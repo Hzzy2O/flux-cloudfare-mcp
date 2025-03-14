@@ -12,3 +12,4 @@
 .cursorignorerules
 .cursorignoreconfig
 api.js
+/package-lock.json
