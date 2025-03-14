@@ -38,7 +38,7 @@ FLUX_API_TOKEN=your_token FLUX_API_URL=your_api_url npx -y flux-cloudflare-mcp
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/flux-cloudflare-mcp.git
+git clone https://github.com/Hzzy2O/flux-cloudflare-mcp.git
 cd flux-cloudflare-mcp
 
 # Install dependencies
@@ -163,7 +163,7 @@ env FLUX_API_TOKEN=YOUR_TOKEN FLUX_API_URL=YOUR_API_URL npx -y flux-cloudflare-m
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/flux-cloudflare-mcp.git
+git clone https://github.com/Hzzy2O/flux-cloudflare-mcp.git
 cd flux-cloudflare-mcp
 ```
 

@@ -45,25 +45,6 @@ function getFluxApiUrl(): string {
   return url;
 }
 
-// Convert aspect ratio string to dimensions
-function aspectRatioToDimensions(ratio: string): { width: number; height: number } {
-  const ratioMap: Record<string, { width: number; height: number }> = {
-    "1:1": { width: 1024, height: 1024 },
-    "16:9": { width: 1024, height: 576 },
-    "21:9": { width: 1024, height: 440 },
-    "3:2": { width: 1024, height: 683 },
-    "2:3": { width: 683, height: 1024 },
-    "4:5": { width: 819, height: 1024 },
-    "5:4": { width: 1024, height: 819 },
-    "3:4": { width: 768, height: 1024 },
-    "4:3": { width: 1024, height: 768 },
-    "9:16": { width: 576, height: 1024 },
-    "9:21": { width: 440, height: 1024 },
-  };
-
-  return ratioMap[ratio] || ratioMap["1:1"];
-}
-
 // Schema definitions
 const imageGenerationSchema = {
   prompt: z.string().min(1).describe("Prompt for generated image"),
@@ -114,13 +95,12 @@ function handleError(error: unknown): never {
 // Register tools
 server.tool(
   "generate_image",
-  "Generate an image from a text prompt using Flux model via Cloudflare Worker",
+  "Generate an image from a text prompt using Flux model",
   imageGenerationSchema,
   async (input) => {
     try {
       const token = getFluxApiToken();
       const apiUrl = getFluxApiUrl();
-      const dimensions = aspectRatioToDimensions(input.aspect_ratio || "1:1");
       
       // Construct message for chat completions
       const messages = [
@@ -143,10 +123,7 @@ server.tool(
           ...(input.seed !== undefined && { seed: input.seed }),
           // Map inference steps to num_steps
           ...(input.num_inference_steps !== undefined && { num_steps: input.num_inference_steps }),
-          // Pass width and height from dimensions
-          width: dimensions.width,
-          height: dimensions.height,
-          // We're not using streaming for this implementation
+          aspect_ratio: input.aspect_ratio || "1:1",
           stream: false,
         }),
       });
