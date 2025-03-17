@@ -240,7 +240,9 @@ server.tool(
       try {
         const filePath = path.join(savePath, fileName);
         fs.writeFileSync(filePath, imageData);
-        savedImages.push(filePath);
+        // Use relative path for response to avoid exposing container paths
+        const relativePath = path.relative(process.cwd(), filePath);
+        savedImages.push(relativePath);
         console.log(`Image saved: ${filePath}`);
       } catch (error) {
         if (error instanceof Error && error.message.includes('permission')) {
